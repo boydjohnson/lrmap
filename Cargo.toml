@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "map-svc",
+    "scrape-svc"
+]
+resolver = "2"
