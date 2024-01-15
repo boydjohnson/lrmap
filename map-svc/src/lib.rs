@@ -1,6 +1,11 @@
 use std::pin::Pin;
 
-use redis::aio::AsyncStream;
+use plotters::{
+    element::Text,
+    style::{FontDesc, FontFamily, FontStyle},
+};
+
+use {map::draw_train, redis::aio::AsyncStream};
 
 use {
     axum::{extract::State, http::StatusCode, routing::get},
@@ -40,7 +45,7 @@ pub async fn root(redis: State<RedisClient>) -> Result<String, axum::http::Statu
     let points: LightRailPoints = serde_json::from_str(&info_string_json)
         .map_err(|_| axum::http::StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let _datetime = points.msp_datetime;
+    let datetime = points.msp_datetime;
 
     let _locations = points.msp_locations;
 
@@ -79,8 +84,15 @@ pub async fn root(redis: State<RedisClient>) -> Result<String, axum::http::Statu
         }
 
         for feature in _locations {
-            draw(feature, &root, &transform);
+            draw_train(feature, &root, &transform);
         }
+
+        root.draw(&Text::new(
+            datetime,
+            (max_x - 4000.0, min_y + 600.0),
+            FontDesc::new(FontFamily::SansSerif, 10.0, FontStyle::Normal),
+        ))
+        .unwrap();
 
         root.draw(&to_drawable_distance::<SVGBackend>(
             vec![

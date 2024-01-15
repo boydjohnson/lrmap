@@ -234,20 +234,18 @@ pub fn draw(
 pub fn to_drawable_train<'a, DB: DrawingBackend + 'a>(
     p: &geo_types::Point,
     size: f32,
-    label: String,
+    stroke_width: u32,
     color: RGBColor,
 ) -> Box<DynElement<'a, DB, (f64, f64)>> {
-    let circ = Circle::new((0, 0), size, ShapeStyle::from(color));
+    let circ = Circle::new(
+        (0, 0),
+        size,
+        ShapeStyle::from(color).stroke_width(stroke_width),
+    );
 
     let empty = EmptyElement::<(f64, f64), DB>::at((p.0.x, p.0.y));
 
-    let t = Text::new(
-        label,
-        (0, 0),
-        FontDesc::new(FontFamily::SansSerif, 10.0, FontStyle::Normal).color(&RGBColor(35, 31, 32)),
-    );
-
-    Box::new((empty + circ + t).into_dyn())
+    Box::new((empty + circ).into_dyn())
 }
 
 pub fn draw_train(
@@ -255,39 +253,6 @@ pub fn draw_train(
     root: &DrawingArea<SVGBackend<'_>, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
     transform: &proj::Proj,
 ) {
-    let train_description = feature
-        .properties
-        .clone()
-        .map(|p| match p.get("route").cloned() {
-            Some(v) => match v {
-                serde_json::Value::Null => {
-                    todo!()
-                }
-                serde_json::Value::Bool(_) => {
-                    todo!()
-                }
-                serde_json::Value::Number(_) => {
-                    todo!()
-                }
-                serde_json::Value::String(s) => {
-                    if s == "901" {
-                        Some("B".to_owned())
-                    } else {
-                        Some("G".to_owned())
-                    }
-                }
-                serde_json::Value::Array(_) => {
-                    todo!()
-                }
-                serde_json::Value::Object(_) => {
-                    todo!()
-                }
-            },
-            None => None,
-        })
-        .flatten()
-        .unwrap_or_default();
-
     if let Some(geo) = feature.geometry {
         let mut g: geo_types::Geometry = geo.try_into().unwrap();
 
@@ -297,8 +262,8 @@ pub fn draw_train(
             geo_types::Geometry::Point(p) => root
                 .draw(&*to_drawable_train::<SVGBackend>(
                     &p,
-                    5.0,
-                    train_description,
+                    7.0,
+                    2,
                     RGBColor(45, 32, 31),
                 ))
                 .unwrap(),
