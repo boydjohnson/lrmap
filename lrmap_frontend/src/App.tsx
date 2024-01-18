@@ -24,8 +24,17 @@ function App() {
 
   return (
     <div className="App">
-      <div dangerouslySetInnerHTML={{ __html: svg }} />
-      <div><p>Realtime map of light rail train locations in the Twin Cities</p></div>
+      <div className="map-container">
+        <nav>
+          <div id="tagline"><div>lrmap</div>Realtime Twin Cities Light Rail Info</div>
+
+
+          <div id="lastUpdate">Updated a few seconds ago</div>
+        </nav>
+
+        <div id="map" dangerouslySetInnerHTML={{ __html: svg }} />
+        <div><p>Realtime map of light rail train locations in the Twin Cities</p></div>
+      </div>
     </div>
   );
 }
