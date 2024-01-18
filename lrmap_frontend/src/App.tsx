@@ -29,7 +29,7 @@ function App() {
           <div id="tagline"><div>lrmap</div>Realtime Twin Cities Light Rail Info</div>
 
 
-          <div id="lastUpdate">Updated a few seconds ago</div>
+          <div id="lastUpdate">Updated every 15 seconds</div>
         </nav>
 
         <div id="map" dangerouslySetInnerHTML={{ __html: svg }} />
